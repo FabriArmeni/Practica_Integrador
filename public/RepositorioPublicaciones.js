@@ -1,46 +1,45 @@
-/*import { EventEmitter } from "node:events";*/
+import { Usuario } from "./Usuario.js";
+import { Publicacion } from "./Publicacion.js";
+import { PublicacionVenta } from "./PublicacionVenta.js";
+import { PublicacionServicio } from "./PublicacionServicio.js";
 
-class RepositorioPublicaciones /*extends EventEmitter*/{
-    constructor(){
-        super()
-        this.publicaciones = []
-    }
-    agregar(publicacion){
-        this.publicaciones.push(publicacion);
-        this.emit("publicacionAgregada", publicacion)
-    }
-    buscarPorUsuario(nombre){
-        return this.publicaciones.filter(publis => {
-            return publis.autor.nombre === nombre
-        })
-        }
-    filtrarActivas(){
-        return this.publicaciones.filter(publis => publis.estaActiva())
-    }
-    cantidadTotal(){
-        return this.publicaciones.length;   
-    }
-    publicacionesRecientesYActivas(publicaciones, dias) {
-    const ahora = new Date();
-    const fechaLimite = new Date(ahora.getTime() - (dias * 24 * 60 * 60 * 1000));
+export class RepositorioPublicaciones {
+  constructor() {
+    this.publicaciones = [];
+  }
 
-    return publicaciones
-        .filter(publi => publi.estaActiva())
-        .filter(publi => new Date(publi.fechaPublicacion) >= fechaLimite);
-    }
+  cargarDesde(datosJSON) {
+    this.publicaciones = datosJSON.map(item => {
+      // Recreamos la instancia de Usuario
+      const usuario = new Usuario(item.autor.nombre, item.autor.email);
 
-    listarPorTipo(claseConstructor) {
-        return this.publicaciones.filter(publi => publi instanceof claseConstructor);
-    }
+      // Reconstruimos la subclase adecuada según la propiedad 'tipo' del JSON
+      switch (item.tipo) {
+        case "venta":
+          return new PublicacionVenta(
+            item.titulo,
+            item.descripcion,
+            usuario,
+            item.precio
+          );
+        case "servicio":
+          return new PublicacionServicio(
+            item.titulo,
+            item.descripcion,
+            usuario,
+            item.tarifa
+          );
+        default:
+          return new Publicacion(
+            item.titulo,
+            item.descripcion,
+            usuario
+          );
+      }
+    });
+  }
 
-    listarResumenes() {
-        return this.publicaciones.map(publi => publi.mostrarResumen());
-    }
-
-    filtrarPorTipo(claseConstructor) {
-        return this.publicaciones.filter(p => p instanceof claseConstructor)
-    }
+  obtenerTodas() {
+    return this.publicaciones;
+  }
 }
-
-
-export default RepositorioPublicaciones;
