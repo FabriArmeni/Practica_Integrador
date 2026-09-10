@@ -1,5 +1,5 @@
 // 1. IMPORTACIONES
-import { Usuario } from "./Usuario.js";
+/*import { Usuario } from "./Usuario.js";
 import { PublicacionVenta } from "./PublicacionVenta.js";
 import { PublicacionServicio } from "./PublicacionServicio.js";
 import { repositorio } from "./RepositorioPublicaciones.js"; 
@@ -220,6 +220,89 @@ inputAutor.addEventListener("blur", () => validarAutor(true));
 if (inputPrecio) {
   inputPrecio.addEventListener("blur", () => validarPrecio(true));
 }
+*/
+/*
+// main.js
+import { Reporte } from "./Reporte.js";
 
-// Submit del formulario
-formulario.addEventListener("submit", manejarEnvio);
+// --- Caso Válido ---
+try {
+  const reporteValido = new Reporte("Carlos", " Contenido inapropiado ");
+  console.log("✅ Reporte creado exitosamente:", reporteValido);
+} catch (error) {
+  console.error("❌ Error inesperado:", error.message);
+}
+
+// --- Caso Inválido (Motivo vacío) ---
+try {
+  const reporteInvalido = new Reporte("Ana", "   ");
+  console.log("✅ Reporte creado exitosamente:", reporteInvalido);
+} catch (error) {
+  console.log("⚠️ Captura esperada:", error.message); 
+  // Muestra: ⚠️ Captura esperada: Motivo inválido
+}*/
+ /*
+// src/main.js
+import { Publicacion } from "./Publicacion.js";
+
+const pub = new Publicacion("Ana", "Calculadora", "En buen estado");
+
+// 1. Primer reporte
+pub.reportar("Carlos", "Spam");
+console.log("Reportes actuales:", pub.reportes.length); // 1
+console.log("¿Requiere revisión?:", pub.requiereRevision()); // false
+
+// 2. Intento de reporte duplicado por el mismo usuario
+try {
+  pub.reportar("Carlos", "Otro motivo");
+} catch (error) {
+  console.log("⚠️ Captura esperada:", error.message); 
+  // Muestra: ⚠️ Captura esperada: El usuario ya reportó esta publicación
+}
+
+// 3. Agregar 2 reportes de usuarios distintos para alcanzar el umbral (3)
+pub.reportar("Laura", "Contenido ofensivo");
+pub.reportar("Pedro", "Información falsa");
+
+console.log("Reportes acumulados:", pub.reportes.length); // 3
+console.log("¿Requiere revisión?:", pub.requiereRevision()); // true
+*/
+
+
+/*
+// src/main.js
+import { Publicacion } from "./Publicacion.js";
+import { RepositorioPublicaciones } from "./RepositorioPublicaciones.js";
+
+const repo = new RepositorioPublicaciones();
+
+const pub1 = new Publicacion("Ana", "Calculadora", "...");
+const pub2 = new Publicacion("Luis", "Libro de Álgebra", "...");
+
+repo.agregar(pub1);
+repo.agregar(pub2);
+
+// Reportamos pub1 hasta que requiera revisión (3 reportes)
+pub1.reportar("User1", "Spam");
+pub1.reportar("User2", "Spam");
+pub1.reportar("User3", "Spam");
+
+console.log("Pendientes de revisión:", repo.pendientesDeRevision().length); // 1
+
+// Si pub1 se da de baja, ya no debe figurar en la lista
+pub1.darDeBaja();
+console.log("Pendientes tras dar de baja:", repo.pendientesDeRevision().length); // 0
+*/
+
+// src/main.js
+import { NotificadorWeb, NotificadorEmail } from "./Notificadores.js";
+
+// Lista de notificadores que cumplen el contrato público
+const canales = [new NotificadorWeb(), new NotificadorEmail()];
+
+const mensaje = "Tu publicación requiere revisión";
+
+// Probamos la invocación polimórfica
+canales.forEach(canal => {
+  console.log(canal.notificar(mensaje));
+});
